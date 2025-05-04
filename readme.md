@@ -21,7 +21,7 @@ Com o crescimento da lanchonete, a falta de um sistema de controle de pedidos po
 - **APIs Implementadas**:
     - Criação, edição e remoção de pedidos
     - Listagem de pedidos
-- **Banco de Dados**: MongoDB para armazenamento das informações dos pedidos.
+- **Banco de Dados**: MySQL para armazenamento das informações dos pedidos.
 
 ## Como Rodar o Projeto Localmente
 
