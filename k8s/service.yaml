@@ -7,6 +7,6 @@ spec:
         app: fast-food
     ports:
         - protocol: TCP
-          port: 3000
-          targetPort: 3000
+          port: 3001
+          targetPort: 3001
     type: LoadBalancer

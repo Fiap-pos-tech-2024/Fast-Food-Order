@@ -40,11 +40,11 @@ Para iniciar o projeto, você precisará ter o Docker e o Docker Compose instala
     docker-compose up --build
 ```
 
-3. Acesse a aplicação em http://localhost:3000
+3. Acesse a aplicação em http://localhost:3001
 
 ## Documentação da API
 
-A documentação das APIs está disponível via Swagger. Após iniciar o projeto, você pode acessá-la em http://localhost:3000/api-docs.
+A documentação das APIs está disponível via Swagger. Após iniciar o projeto, você pode acessá-la em http://localhost:3001/api-docs.
 
 ## Regras de negócio
 
@@ -56,7 +56,7 @@ Para criar um pedido, utilize o endpoint abaixo. Caso não seja informado id do 
 
 ```bash
 POST
-curl --location 'http://localhost:3000/order' \
+curl --location 'http://localhost:3001/order' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "idClient": "678b039fafba99ba4720f853",
@@ -81,6 +81,6 @@ Após criar o pedido, você pode consultar o status utilizando o id do pedido ge
 
 ```bash
 GET
-curl --location 'http://localhost:3000/order/:idOrder' \
+curl --location 'http://localhost:3001/order/:idOrder' \
 --data ''
 ```

@@ -10,6 +10,6 @@ RUN npm install
 COPY src ./src
 
 # Porta que o Express vai usar
-EXPOSE 3000
+EXPOSE 3001
 
 CMD ["npm", "start"]

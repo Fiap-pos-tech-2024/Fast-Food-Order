@@ -58,8 +58,8 @@ class InitProject {
     }
 
     startServer() {
-        this.express.listen(3000, () => {
-            console.log('Server is running on port 3000')
+        this.express.listen(3001, () => {
+            console.log('Server is running on port 3001')
         })
     }
 }

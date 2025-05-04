@@ -4,7 +4,7 @@ services:
             context: .
             dockerfile: Dockerfile
         ports:
-            - '3000:3000'
+            - '3001:3001'
         environment:
             MONGODB_URI: ${MONGODB_URI}
             MERCADO_PAGO_API: ${MERCADO_PAGO_API}
