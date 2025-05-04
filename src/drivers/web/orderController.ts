@@ -2,6 +2,9 @@
 import { Router, Request, Response } from 'express'
 import { OrderUseCase } from '../../useCases/order'
 import { ORDER_STATUS_LIST } from '../../constants/order'
+import { MySQLOrderRepository } from '../database/orderModel';
+import { ClientRepository } from '../../domain/interface/clientRepository';
+import { ProductRepository } from '../../domain/interface/productRepository';
 
 interface errorType {
     message: string
@@ -192,6 +195,7 @@ export class OrderController {
             }
 
             const orderId = await this.OrderUseCase.createOrder(order)
+
             res.status(201).json({
                 id: orderId,
                 message: 'Order created successfully',
@@ -200,7 +204,7 @@ export class OrderController {
             const errorData = error as errorType
             const status_error: { [key: string]: number } = {
                 'Order already exists': 409,
-                'Product does not exist': 400,
+                'Product not found': 400,
                 'Client does not exist': 400,
                 'Order must have at least one item': 500,
             }
@@ -572,3 +576,10 @@ export class OrderController {
         }
     }
 }
+
+const orderRepository = new MySQLOrderRepository();
+const clientRepository: ClientRepository = {} as ClientRepository; // Mock ou implementação real
+const productRepository: ProductRepository = {} as ProductRepository; // Mock ou implementação real
+const orderUseCase = new OrderUseCase(orderRepository, clientRepository, productRepository);
+
+export const orderController = new OrderController(orderUseCase);

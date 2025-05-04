@@ -1,134 +1,152 @@
-import { MongoConnection } from '../../config/mongoConfig'
-import { ORDER_STATUS_LIST } from '../../constants/order'
+import { getConnection } from '../../config/mysqlConfig'
+import {
+    ORDER_STATUS_LIST,
+    ORDER_STATUS_LIST_ACTIVE,
+} from '../../constants/order'
 import { Order } from '../../domain/entities/order'
 import { OrderRepository } from '../../domain/interface/orderRepository'
-import { ObjectId } from 'mongodb'
 
-export class MongoOrderRepository implements OrderRepository {
-    private collection = 'order'
-    private mongoConnection: MongoConnection
-
-    constructor(mongoConnection: MongoConnection) {
-        this.mongoConnection = mongoConnection
-    }
-
-    private async getDb() {
-        return this.mongoConnection.getDatabase()
-    }
-
+export class MySQLOrderRepository implements OrderRepository {
     async createOrder(order: Order): Promise<string> {
-        const db = await this.getDb()
-        const result = await db.collection(this.collection).insertOne({
-            _id: new ObjectId(),
-            idClient: order.idClient,
-            cpf: order.cpf,
-            name: order.name,
-            email: order.email,
-            status: order.status,
-            itens: order.items,
-            value: order.value,
-        })
-        return result.insertedId.toString()
+        const connection = await getConnection()
+        const [result]: any = await connection.execute(
+            `INSERT INTO orders (idClient, cpf, name, email, status, items, value) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [
+                order.idClient || null, // Torna idClient opcional
+                order.cpf ? order.cpf.replace(/\D/g, '') : null, // Remove pontos e torna CPF opcional
+                order.name,
+                order.email,
+                order.status,
+                JSON.stringify(order.items),
+                order.value,
+            ]
+        )
+        return result.insertId.toString()
     }
 
     async getOrder(orderId: string): Promise<Order | null> {
-        const db = await this.getDb()
-        const order = await db
-            .collection(this.collection)
-            .findOne({ _id: new ObjectId(orderId) })
-        if (order) {
+        const connection = await getConnection()
+        const [rows]: any = await connection.execute(
+            `SELECT * FROM orders WHERE id = ?`,
+            [orderId]
+        )
+        if (rows.length > 0) {
+            const order = rows[0]
             return new Order({
-                idOrder: order._id.toString(),
+                idOrder: order.id,
                 idClient: order.idClient,
                 cpf: order.cpf,
                 name: order.name,
                 email: order.email,
                 status: order.status,
-                items: order.items,
+                items:
+                    typeof order.items === 'string'
+                        ? JSON.parse(order.items)
+                        : order.items,
                 value: order.value,
-                paymentLink: order.paymentLink,
-                paymentId: order.paymentId,
+                paymentLink: order.paymentLink ?? null,
+                paymentId: order.paymentId ?? null,
             })
         }
         return null
     }
 
     async updateOrder(orderId: string, updatedOrderData: Order): Promise<void> {
-        const db = await this.getDb()
-        const dbCollection = db.collection(this.collection)
-        const query = { _id: new ObjectId(orderId) }
-
-        const orderData = { ...updatedOrderData, idOrder: orderId }
-        await dbCollection.updateOne(query, { $set: orderData })
+        try {
+            const connection = await getConnection()
+            await connection.execute(
+                `UPDATE orders SET idClient = ?, cpf = ?, name = ?, email = ?, status = ?, items = ?, value = ? WHERE id = ?`,
+                [
+                    updatedOrderData.idClient || null, // Substitui undefined por null
+                    updatedOrderData.cpf
+                        ? updatedOrderData.cpf.replace(/\D/g, '')
+                        : null, // Remove pontos e substitui undefined por null
+                    updatedOrderData.name || null,
+                    updatedOrderData.email || null,
+                    updatedOrderData.status || null,
+                    JSON.stringify(
+                        updatedOrderData.items || updatedOrderData.items || []
+                    ), // Garante que items nunca seja null
+                    updatedOrderData.value || null,
+                    orderId,
+                ]
+            )
+        } catch (error) {
+            console.error('Error updating order:', error)
+            throw new Error('Failed to update order')
+        }
     }
 
     async deleteOrder(orderId: string): Promise<void> {
-        const db = await this.getDb()
-        await db
-            .collection(this.collection)
-            .deleteOne({ _id: new ObjectId(orderId) })
+        const connection = await getConnection()
+        await connection.execute(`DELETE FROM orders WHERE id = ?`, [orderId])
     }
 
     async updateOrderStatus(orderId: string, status: string): Promise<void> {
-        const db = await this.getDb()
-        const dbCollection = db.collection(this.collection)
-        const query = { _id: new ObjectId(orderId) }
-
-        await dbCollection.updateOne(query, { $set: { status } })
+        const connection = await getConnection()
+        await connection.execute(`UPDATE orders SET status = ? WHERE id = ?`, [
+            status,
+            orderId,
+        ])
     }
 
     async updatePayment(orderId: string, paymentId: string): Promise<void> {
-        const db = await this.getDb()
-        const dbCollection = db.collection(this.collection)
-        const query = { _id: new ObjectId(orderId) }
-
-        await dbCollection.updateOne(query, { $set: { idPayment: paymentId } })
+        const connection = await getConnection()
+        await connection.execute(
+            `UPDATE orders SET idPayment = ? WHERE id = ?`,
+            [paymentId, orderId]
+        )
     }
 
     async listOrders(): Promise<Order[]> {
-        const db = await this.getDb()
-        const orders = await db.collection(this.collection).find().toArray()
-        return orders.map((order) => {
-            return new Order({
-                idOrder: order._id.toString(),
-                idClient: order.idClient,
-                cpf: order.cpf,
-                name: order.name,
-                email: order.email,
-                status: order.status,
-                items: order.items,
-                value: order.value,
-                paymentLink: order.paymentLink,
-                paymentId: order.paymentId,
+        const connection = await getConnection()
+        const [rows]: any = await connection.execute(`SELECT * FROM orders`)
+        let itens = []
+        try {
+            itens = rows.map((order: any) => {
+                return new Order({
+                    idOrder: order.id,
+                    idClient: order.idClient,
+                    cpf: order.cpf,
+                    name: order.name,
+                    email: order.email,
+                    status: order.status,
+                    items:
+                        typeof order.items === 'string'
+                            ? JSON.parse(order.items)
+                            : order.items,
+                    value: order.value,
+                    paymentLink: order.paymentLink ?? null,
+                    paymentId: order.paymentId ?? null,
+                })
             })
-        })
+        } catch (error) {
+            console.error('Error parsing items:', error)
+            throw new Error('Failed to parse items from database')
+        }
+
+        return itens
     }
 
     async getActiveOrders(): Promise<Order[]> {
-        const db = await this.getDb()
-
-        const orders = await db
-            .collection(this.collection)
-            .find({
-                status: { $in: ORDER_STATUS_LIST },
-                idPayment: { $ne: null },
-            })
-            .sort({ createdAt: 1 })
-            .toArray()
-
-        return orders.map((order) => {
+        const connection = await getConnection();
+        const [rows]: any = await connection.execute(
+            `SELECT * FROM orders WHERE status IN (${ORDER_STATUS_LIST.map(() => '?').join(',')})`,
+            ORDER_STATUS_LIST_ACTIVE
+        );
+        return rows.map((order: any) => {
             return new Order({
-                idOrder: order._id.toString(),
+                idOrder: order.id,
                 idClient: order.idClient,
                 cpf: order.cpf,
                 name: order.name,
                 email: order.email,
                 status: order.status,
-                items: order.items,
+                items: typeof order.items === 'string' ? JSON.parse(order.items) : order.items,
                 value: order.value,
-                paymentLink: order.paymentLink,
-                paymentId: order.paymentId,
-            })
-        })
+                paymentLink: order.paymentLink ?? null,
+                paymentId: order.paymentId ?? null,
+            });
+        });
     }
 }

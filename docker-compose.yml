@@ -1,29 +1,46 @@
 services:
-    api:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        ports:
-            - '3000:3000'
-        environment:
-            MONGODB_URI: ${MONGODB_URI}
-            MERCADO_PAGO_API: ${MERCADO_PAGO_API}
-            MERCADO_PAGO_CLIENT_SECRET: ${MERCADO_PAGO_CLIENT_SECRET}
-            MERCADO_PAGO_CLIENT_ID: ${MERCADO_PAGO_CLIENT_ID}
-            MERCADO_PAGO_QR_CODE_API: ${MERCADO_PAGO_QR_CODE_API}
-            MERCADO_PAGO_WEBHOOK: ${MERCADO_PAGO_WEBHOOK}
-        depends_on:
-            - mongo
-        volumes:
-            - ./src:/app/src
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      MONGODB_URI: ${MONGODB_URI}
+      MERCADO_PAGO_API: ${MERCADO_PAGO_API}
+      MERCADO_PAGO_CLIENT_SECRET: ${MERCADO_PAGO_CLIENT_SECRET}
+      MERCADO_PAGO_CLIENT_ID: ${MERCADO_PAGO_CLIENT_ID}
+      MERCADO_PAGO_QR_CODE_API: ${MERCADO_PAGO_QR_CODE_API}
+      MERCADO_PAGO_WEBHOOK: ${MERCADO_PAGO_WEBHOOK}
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: food2025
+      MYSQL_DATABASE: fast_food
+    depends_on:
+      - mongo
+      - mysql
+    volumes:
+      - ./src:/app/src
 
-    mongo:
-        image: mongo:latest
-        command:
-            - '--logpath'
-            - '/var/log/mongodb/mongod.log'
-        volumes:
-            - mongo_data:/data/db # Persistir os dados do MongoDB
+  mongo:
+    image: mongo:latest
+    command:
+      - '--logpath'
+      - '/var/log/mongodb/mongod.log'
+    volumes:
+      - mongo_data:/data/db
+
+  mysql:
+    image: mysql:latest
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: food2025
+      MYSQL_USER: food
+      MYSQL_DATABASE: fast_food
+    volumes:
+      - mysql_data:/var/lib/mysql
 
 volumes:
-    mongo_data:
+  mongo_data:
+  mysql_data:

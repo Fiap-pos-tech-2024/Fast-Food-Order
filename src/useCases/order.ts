@@ -31,24 +31,19 @@ export class OrderUseCase {
             }
         }
 
-        if (order.idClient) {
-            const existingClient = await this.clientRepository.findById(
-                order.idClient
-            )
-            if (!existingClient) {
-                throw new Error('Client does not exist')
-            }
-        }
 
         const itemsDetails: Product[] = []
         order.value = 0
 
         for (const item of order.items) {
+            console.log('item 2')
             const existingProduct = await this.productRepository.findById(
                 item.idProduct
             )
+            console.log('item 3')
 
             if (!existingProduct) {
+                console.log('Product not found')
                 continue
             }
 
