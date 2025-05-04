@@ -129,11 +129,11 @@ export class MySQLOrderRepository implements OrderRepository {
     }
 
     async getActiveOrders(): Promise<Order[]> {
-        const connection = await getConnection();
+        const connection = await getConnection()
         const [rows]: any = await connection.execute(
             `SELECT * FROM orders WHERE status IN (${ORDER_STATUS_LIST.map(() => '?').join(',')})`,
             ORDER_STATUS_LIST_ACTIVE
-        );
+        )
         return rows.map((order: any) => {
             return new Order({
                 idOrder: order.id,
@@ -142,11 +142,14 @@ export class MySQLOrderRepository implements OrderRepository {
                 name: order.name,
                 email: order.email,
                 status: order.status,
-                items: typeof order.items === 'string' ? JSON.parse(order.items) : order.items,
+                items:
+                    typeof order.items === 'string'
+                        ? JSON.parse(order.items)
+                        : order.items,
                 value: order.value,
                 paymentLink: order.paymentLink ?? null,
                 paymentId: order.paymentId ?? null,
-            });
-        });
+            })
+        })
     }
 }

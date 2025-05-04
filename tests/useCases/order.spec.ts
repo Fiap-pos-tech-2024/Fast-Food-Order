@@ -30,10 +30,7 @@ describe('orderUseCase', () => {
             delete: jest.fn(),
         }
 
-        useCase = new OrderUseCase(
-            OrderRepository,
-            productRepository
-        )
+        useCase = new OrderUseCase(OrderRepository, productRepository)
     })
 
     describe('listOrders', () => {

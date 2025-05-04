@@ -4,4 +4,4 @@ export const PAYMENT_STATUS = {
     FAILED: 'FAILED',
     CANCELED: 'CANCELED',
     PAID: 'PAID',
-};
+}

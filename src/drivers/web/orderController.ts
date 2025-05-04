@@ -2,8 +2,8 @@
 import { Router, Request, Response } from 'express'
 import { OrderUseCase } from '../../useCases/order'
 import { ORDER_STATUS_LIST } from '../../constants/order'
-import { MySQLOrderRepository } from '../database/orderModel';
-import { ProductRepository } from '../../domain/interface/productRepository';
+import { MySQLOrderRepository } from '../database/orderModel'
+import { ProductRepository } from '../../domain/interface/productRepository'
 
 interface errorType {
     message: string
@@ -576,8 +576,8 @@ export class OrderController {
     }
 }
 
-const orderRepository = new MySQLOrderRepository();
-const productRepository: ProductRepository = {} as ProductRepository; // Mock ou implementação real
-const orderUseCase = new OrderUseCase(orderRepository, productRepository);
+const orderRepository = new MySQLOrderRepository()
+const productRepository: ProductRepository = {} as ProductRepository // Mock ou implementação real
+const orderUseCase = new OrderUseCase(orderRepository, productRepository)
 
-export const orderController = new OrderController(orderUseCase);
+export const orderController = new OrderController(orderUseCase)

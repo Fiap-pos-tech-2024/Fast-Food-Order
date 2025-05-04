@@ -1,7 +1,7 @@
-import { getConnection } from './mysqlConfig';
+import { getConnection } from './mysqlConfig'
 
 export async function initializeDatabase(): Promise<void> {
-    const connection = await getConnection();
+    const connection = await getConnection()
 
     // Criação da tabela orders
     await connection.execute(`
@@ -17,7 +17,7 @@ export async function initializeDatabase(): Promise<void> {
             paymentLink VARCHAR(255),
             paymentId VARCHAR(255)
         );
-    `);
+    `)
 
     // Criação da tabela clients
     await connection.execute(`
@@ -27,7 +27,7 @@ export async function initializeDatabase(): Promise<void> {
             name VARCHAR(255) NOT NULL,
             email VARCHAR(255) NOT NULL
         );
-    `);
+    `)
 
     // Criação da tabela products
     await connection.execute(`
@@ -38,7 +38,7 @@ export async function initializeDatabase(): Promise<void> {
             unitValue DECIMAL(10, 2) NOT NULL,
             createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
         );
-    `);
+    `)
 
     // Criação da tabela payments
     await connection.execute(`
@@ -51,7 +51,7 @@ export async function initializeDatabase(): Promise<void> {
             FOREIGN KEY (idOrder) REFERENCES orders(id),
             FOREIGN KEY (idClient) REFERENCES clients(id)
         );
-    `);
+    `)
 
-    console.log('Database initialized successfully');
+    console.log('Database initialized successfully')
 }

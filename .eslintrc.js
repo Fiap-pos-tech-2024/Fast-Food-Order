@@ -9,8 +9,12 @@ module.exports = {
         ecmaVersion: 2020,
         sourceType: 'module',
     },
+    env: {
+        node: true, // Define o ambiente Node.js para reconhecer 'module'
+    },
     rules: {
         'prettier/prettier': 'error',
+        '@typescript-eslint/no-explicit-any': 'off', // Ignore the use of 'any'
     },
     settings: {
         'import/resolver': {

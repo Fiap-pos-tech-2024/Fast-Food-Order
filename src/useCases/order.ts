@@ -29,7 +29,6 @@ export class OrderUseCase {
             }
         }
 
-
         const itemsDetails: Product[] = []
         order.value = 0
 
