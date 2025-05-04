@@ -12,26 +12,27 @@ import { MongoProductRepository } from './drivers/database/productModel'
 import { OrderUseCase } from './useCases/order'
 import swaggerRouter from './config/swaggerConfig'
 import { HealthCheckUseCase } from './useCases/healthCheck'
-import { MongoPaymentRepository } from './drivers/database/paymentModel'
 import { PaymentUseCase } from './useCases/payment'
 import { PaymentController } from './drivers/web/paymentController'
 import { MercadoPagoController } from './drivers/web/mercadoPagoController'
+import { MysqlConnection } from './config/mysqlConfig'
 
 class InitProject {
     public express: express.Application
-    public mongoConnection: MongoConnection
+    public mysqlConnection: MysqlConnection
 
     constructor() {
         this.express = express()
-        this.mongoConnection = MongoConnection.getInstance()
+        this.mysqlConnection = MysqlConnection.getInstance()
+        this.express.use(express.urlencoded({ extended: true }))
         this.start()
     }
 
     async start() {
         try {
-            await this.mongoConnection.connect()
+            await this.mysqlConnection.connect()
             this.express.use(express.json())
-            this.setupRoutes()
+            // this.setupRoutes()
             this.startServer()
         } catch (error) {
             console.error('Failed to start application:', error)
@@ -40,54 +41,33 @@ class InitProject {
 
     setupRoutes() {
         // Configuração do Client
-        const clientRepository = new MongoClientRepository(this.mongoConnection)
-        const clientUseCase = new ClientUseCase(clientRepository)
-        const routesClientController = new ClientController(clientUseCase)
-        this.express.use('/client', routesClientController.setupRoutes())
-
-        // Configuração do Product
-        const productRepository = new MongoProductRepository(
-            this.mongoConnection
-        )
-        const productUseCase = new ProductUseCase(productRepository)
-        const routesProductController = new ProductController(productUseCase)
-        this.express.use('/product', routesProductController.setupRoutes())
-
-        // Configuração do Order
-        const orderRepository = new MongoOrderRepository(this.mongoConnection)
-        const orderUseCase = new OrderUseCase(
-            orderRepository,
-            clientRepository,
-            productRepository
-        )
-        const routesOrderController = new OrderController(orderUseCase)
-        this.express.use('/order', routesOrderController.setupRoutes())
-
-        // Configuração do MercadoPagoController
-        const mercadoPagoController = new MercadoPagoController()
-
-        // Configuração do Pagamento
-        const paymentRepository = new MongoPaymentRepository(
-            this.mongoConnection
-        )
-
-        // Agora passando o `mercadoPagoController` para o `PaymentUseCase`
-        const paymentUseCase = new PaymentUseCase(
-            paymentRepository,
-            orderRepository,
-            mercadoPagoController
-        )
-
-        const paymentController = new PaymentController(paymentUseCase)
-        this.express.use('/payment', paymentController.setupRoutes())
-
-        // Configuração do Health Check e Swagger
-        const healthCheckUseCase = new HealthCheckUseCase()
-        const routesHealthCheckController = new HealthCheckController(
-            healthCheckUseCase
-        )
-        this.express.use('/health', routesHealthCheckController.setupRoutes())
-        this.express.use('/api-docs', swaggerRouter)
+        //     const clientRepository = new MongoClientRepository(this.mongoConnection)
+        //     const clientUseCase = new ClientUseCase(clientRepository)
+        //     const routesClientController = new ClientController(clientUseCase)
+        //     this.express.use('/client', routesClientController.setupRoutes())
+        //     // Configuração do Product
+        //     const productRepository = new MongoProductRepository(
+        //         this.mongoConnection
+        //     )
+        //     const productUseCase = new ProductUseCase(productRepository)
+        //     const routesProductController = new ProductController(productUseCase)
+        //     this.express.use('/product', routesProductController.setupRoutes())
+        //     // Configuração do Order
+        //     const orderRepository = new MongoOrderRepository(this.mongoConnection)
+        //     const orderUseCase = new OrderUseCase(
+        //         orderRepository,
+        //         clientRepository,
+        //         productRepository
+        //     )
+        //     const routesOrderController = new OrderController(orderUseCase)
+        //     this.express.use('/order', routesOrderController.setupRoutes())
+        //     // Configuração do Health Check e Swagger
+        //     const healthCheckUseCase = new HealthCheckUseCase()
+        //     const routesHealthCheckController = new HealthCheckController(
+        //         healthCheckUseCase
+        //     )
+        //     this.express.use('/health', routesHealthCheckController.setupRoutes())
+        //     this.express.use('/api-docs', swaggerRouter)
     }
 
     startServer() {

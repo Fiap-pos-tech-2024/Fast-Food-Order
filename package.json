@@ -39,6 +39,7 @@
         "@types/express": "^5.0.0",
         "express": "^4.21.0",
         "mongodb": "^6.9.0",
+        "mysql2": "^3.14.1",
         "nodemon": "^3.1.6",
         "qrcode": "^1.5.4",
         "swagger-jsdoc": "^6.2.8",
