@@ -3,7 +3,6 @@ import { Router, Request, Response } from 'express'
 import { OrderUseCase } from '../../useCases/order'
 import { ORDER_STATUS_LIST } from '../../constants/order'
 import { MySQLOrderRepository } from '../database/orderModel';
-import { ClientRepository } from '../../domain/interface/clientRepository';
 import { ProductRepository } from '../../domain/interface/productRepository';
 
 interface errorType {
@@ -578,8 +577,7 @@ export class OrderController {
 }
 
 const orderRepository = new MySQLOrderRepository();
-const clientRepository: ClientRepository = {} as ClientRepository; // Mock ou implementação real
 const productRepository: ProductRepository = {} as ProductRepository; // Mock ou implementação real
-const orderUseCase = new OrderUseCase(orderRepository, clientRepository, productRepository);
+const orderUseCase = new OrderUseCase(orderRepository, productRepository);
 
 export const orderController = new OrderController(orderUseCase);

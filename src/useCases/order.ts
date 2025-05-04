@@ -1,6 +1,5 @@
 import { Order } from '../domain/entities/order'
 import { OrderRepository } from '../domain/interface/orderRepository'
-import { ClientRepository } from '../domain/interface/clientRepository'
 import { ProductRepository } from '../domain/interface/productRepository'
 import { Product } from '../domain/entities/product'
 import { ORDER_STATUS } from '../constants/order'
@@ -8,7 +7,6 @@ import { ORDER_STATUS } from '../constants/order'
 export class OrderUseCase {
     constructor(
         private orderRepository: OrderRepository,
-        private clientRepository: ClientRepository,
         private productRepository: ProductRepository
     ) {}
 
