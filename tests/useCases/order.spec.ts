@@ -1,14 +1,11 @@
 import { OrderUseCase } from '../../src/useCases/order'
 import { OrderRepository } from '../../src/domain/interface/orderRepository'
 import { Order } from '../../src/domain/entities/order'
-import { ClientRepository } from '../../src/domain/interface/clientRepository'
-import { Client } from '../domain/entities/client'
 import { ORDER_STATUS } from '../../src/constants/order'
 import { ProductRepository } from '../../src/domain/interface/productRepository'
 
 describe('orderUseCase', () => {
     let OrderRepository: jest.Mocked<OrderRepository>
-    let clientRepository: jest.Mocked<ClientRepository>
     let productRepository: jest.Mocked<ProductRepository>
     let useCase: OrderUseCase
 
@@ -24,15 +21,6 @@ describe('orderUseCase', () => {
             getActiveOrders: jest.fn(),
         }
 
-        clientRepository = {
-            list: jest.fn(),
-            findByEmail: jest.fn(),
-            save: jest.fn(),
-            update: jest.fn(),
-            delete: jest.fn(),
-            findById: jest.fn(),
-        }
-
         productRepository = {
             findById: jest.fn(),
             findByCategory: jest.fn(),
@@ -44,7 +32,6 @@ describe('orderUseCase', () => {
 
         useCase = new OrderUseCase(
             OrderRepository,
-            clientRepository,
             productRepository
         )
     })
@@ -56,7 +43,6 @@ describe('orderUseCase', () => {
                     idOrder: '123',
                     paymentId: null,
                     paymentLink: null,
-                    idClient: '1',
                     cpf: '000.000.000-00',
                     name: 'John Doe',
                     email: 'john@example.com',
@@ -75,7 +61,7 @@ describe('orderUseCase', () => {
     })
 
     describe('createOrder', () => {
-        it('should save a new order with client info', async () => {
+        it('should save a new order', async () => {
             const orderData: Order = {
                 cpf: '000.000.000-00',
                 name: 'John Doe',
@@ -91,93 +77,10 @@ describe('orderUseCase', () => {
                 ],
             } as Order
 
-            const clientData: Client = {
-                idClient: '1',
-                email: 'new@example.com',
-            } as Client
-
-            clientRepository.findById.mockResolvedValue(clientData)
-
             await useCase.createOrder(orderData)
 
             expect(OrderRepository.createOrder).toHaveBeenCalledWith(orderData)
             expect(OrderRepository.createOrder).toHaveBeenCalledTimes(1)
-        })
-
-        it('should throw an error if order without client registry', async () => {
-            const orderData: Order = {
-                idOrder: null,
-                paymentId: null,
-                paymentLink: null,
-                idClient: '1',
-                cpf: '000.000.000-00',
-                name: 'John Doe',
-                email: 'john@example.com',
-                status: 'RECEIVED',
-                value: 10,
-            } as Order
-
-            clientRepository.findById.mockResolvedValue(null)
-
-            await expect(useCase.createOrder(orderData)).rejects.toThrow(
-                'Client does not exist'
-            )
-            expect(OrderRepository.createOrder).not.toHaveBeenCalled()
-        })
-
-        it('should create a anonymous order if there is no client defined', async () => {
-            const orderData: Order = {
-                idOrder: null,
-                paymentId: null,
-                paymentLink: null,
-                idClient: null,
-                cpf: null,
-                name: null,
-                email: null,
-                status: 'RECEIVED',
-                value: 10,
-                items: [
-                    {
-                        idProduct: '6726be94d9bec010f0fdf613',
-                        amount: 10,
-                        observation: 'Observação opcional sobre o item',
-                    },
-                ],
-            } as Order
-
-            clientRepository.findById.mockResolvedValue(null)
-
-            await useCase.createOrder(orderData)
-
-            expect(OrderRepository.createOrder).toHaveBeenCalledWith(orderData)
-            expect(OrderRepository.createOrder).toHaveBeenCalledTimes(1)
-            expect(clientRepository.findById).not.toHaveBeenCalled()
-        })
-
-        it('should not create an order if already exist', async () => {
-            const orderData: Order = {
-                idOrder: '1',
-                paymentId: null,
-                paymentLink: null,
-                idClient: null,
-                cpf: null,
-                name: null,
-                email: null,
-                status: 'RECEIVED',
-                value: 10,
-            } as Order
-
-            clientRepository.findById.mockResolvedValue(null)
-
-            OrderRepository.getOrder.mockResolvedValue(orderData)
-
-            await expect(useCase.createOrder(orderData)).rejects.toThrow(
-                'Order already exist'
-            )
-
-            expect(OrderRepository.createOrder).not.toHaveBeenCalled()
-            expect(OrderRepository.getOrder).toHaveBeenCalledTimes(1)
-            expect(clientRepository.findById).not.toHaveBeenCalled()
         })
     })
 
