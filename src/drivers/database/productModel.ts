@@ -76,6 +76,14 @@ export class MongoProductRepository implements ProductRepository {
         const product = await db
             .collection(this.collection)
             .findOne({ _id: new ObjectId(idProduct) })
+
+        // imprimir todos        // os produtos
+        const allProducts = await db
+            .collection(this.collection)
+            .find()
+            .toArray()
+        console.log('All products:', allProducts)
+
         if (product) {
             return new Product({
                 idProduct: product._id.toString(),

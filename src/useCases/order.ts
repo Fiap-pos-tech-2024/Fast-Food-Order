@@ -34,26 +34,30 @@ export class OrderUseCase {
 
         for (const item of order.items) {
             console.log('item 2')
+
             const existingProduct = await this.productRepository.findById(
                 item.idProduct
             )
             console.log('item 3')
 
+            // list all products
+
             if (!existingProduct) {
                 console.log('Product not found')
-                continue
+                // throw new Error(`Product with id ${item.idProduct} not found`)
+                // continue
             }
 
             const productDetail = new Product({
-                idProduct: existingProduct.idProduct,
-                name: existingProduct.name,
+                idProduct: item.idProduct,
+                name: item.name,
                 amount: item.amount,
-                unitValue: existingProduct.unitValue ?? 0,
+                unitValue: item.amount ?? 0,
                 observation: item.observation ?? null,
                 createdAt: new Date(),
                 updatedAt: null,
                 deletedAt: null,
-                category: existingProduct.category,
+                category: item.category ?? null,
                 calculateTotalValue: function () {
                     return this.unitValue * this.amount
                 },
@@ -65,6 +69,8 @@ export class OrderUseCase {
 
         order.items = itemsDetails
         order.status = ORDER_STATUS.AWAITING_PAYMENT
+
+        console.log(order)
 
         const result = await this.orderRepository.createOrder(order)
         return result
