@@ -40,7 +40,6 @@ services:
         networks:
             - shared-mysql
 
-
 volumes:
     mysql_data:
 
@@ -48,4 +47,3 @@ networks:
     shared-net:
         external: true
     shared-mysql:
-     
