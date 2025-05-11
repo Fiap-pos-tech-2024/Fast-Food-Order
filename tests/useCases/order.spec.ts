@@ -28,7 +28,7 @@ describe('orderUseCase', () => {
             save: jest.fn(),
             update: jest.fn(),
             delete: jest.fn(),
-            listProducts: jest.fn(), // Adicionado para corrigir o erro
+            listProducts: jest.fn(),
         }
 
         useCase = new OrderUseCase(OrderRepository, productRepository)
