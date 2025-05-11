@@ -17,6 +17,10 @@ export class OrderUseCase {
         return this.orderRepository.getActiveOrders()
     }
 
+    async listProducts(): Promise<Product[]> {
+        return this.productRepository.listProducts()
+    }
+
     async createOrder(order: Order): Promise<string> {
         if (order.items?.length === 0) {
             throw new Error('Order must have at least one item')

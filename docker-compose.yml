@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
     api:
         build:
@@ -6,7 +8,8 @@ services:
         ports:
             - '3001:3001'
         environment:
-            MONGODB_URI: ${MONGODB_URI}
+            # Aqui, certifique-se de que esta variável usa o nome do container Mongo do outro projeto
+            MONGODB_URI: mongodb://shared-postgres:27017/shared_db
             MERCADO_PAGO_API: ${MERCADO_PAGO_API}
             MERCADO_PAGO_CLIENT_SECRET: ${MERCADO_PAGO_CLIENT_SECRET}
             MERCADO_PAGO_CLIENT_ID: ${MERCADO_PAGO_CLIENT_ID}
@@ -17,18 +20,12 @@ services:
             MYSQL_PASSWORD: food2025
             MYSQL_DATABASE: fast_food
         depends_on:
-            - mongo
             - mysql
         volumes:
             - ./src:/app/src
-
-    mongo:
-        image: mongo:latest
-        command:
-            - '--logpath'
-            - '/var/log/mongodb/mongod.log'
-        volumes:
-            - mongo_data:/data/db
+        networks:
+            - shared-mysql
+            - shared-net
 
     mysql:
         image: mysql:latest
@@ -40,7 +37,15 @@ services:
             MYSQL_DATABASE: fast_food
         volumes:
             - mysql_data:/var/lib/mysql
+        networks:
+            - shared-mysql
+
 
 volumes:
-    mongo_data:
     mysql_data:
+
+networks:
+    shared-net:
+        external: true
+    shared-mysql:
+     

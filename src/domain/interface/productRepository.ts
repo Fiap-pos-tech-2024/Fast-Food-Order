@@ -7,4 +7,5 @@ export interface ProductRepository {
     delete(productId: string): Promise<void>
     findById(idProduct: string): Promise<Product | null>
     findByCategory(category: string): Promise<Product[]>
+    listProducts(): Promise<Product[]>
 }

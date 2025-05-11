@@ -4,7 +4,7 @@ export class MongoConnection {
     private static instance: MongoConnection
     private client: MongoClient
     private db: Db | null = null
-    private readonly url = 'mongodb://mongo:27017'
+    private readonly url = 'mongodb://mongo:27017' // Usar variável de ambiente
     private readonly dbName = 'fiap'
 
     constructor() {

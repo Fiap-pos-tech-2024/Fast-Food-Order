@@ -82,6 +82,7 @@ export class MongoProductRepository implements ProductRepository {
             .collection(this.collection)
             .find()
             .toArray()
+
         console.log('All products:', allProducts)
 
         if (product) {
@@ -107,6 +108,27 @@ export class MongoProductRepository implements ProductRepository {
             .collection(this.collection)
             .find({ category })
             .toArray()
+        return products.map(
+            (product) =>
+                new Product({
+                    idProduct: product._id.toString(),
+                    name: product.name,
+                    amount: product.amount,
+                    unitValue: product.unitValue,
+                    observation: product.observation,
+                    createdAt: product.createdAt,
+                    updatedAt: product.updatedAt,
+                    deletedAt: product.deletedAt,
+                    category: product.category,
+                    calculateTotalValue: product.calculateTotalValue,
+                })
+        )
+    }
+
+    async listProducts(): Promise<Product[]> {
+        console.log('Listing products from MongoDB')
+        const db = await this.getDb()
+        const products = await db.collection('products').find().toArray()
         return products.map(
             (product) =>
                 new Product({

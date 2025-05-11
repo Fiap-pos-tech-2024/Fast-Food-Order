@@ -17,6 +17,7 @@ export class OrderController {
 
     public setupRoutes() {
         this.routes.get('/status/active', this.listActiveOrders.bind(this))
+        this.routes.post('/products', this.listProducts.bind(this))
         this.routes.get('/:id', this.getOrder.bind(this))
         this.routes.put('/:id', this.updateOrder.bind(this))
         this.routes.delete('/:id', this.deleteOrder.bind(this))
@@ -572,6 +573,15 @@ export class OrderController {
             res.status(200).json(activeOrders)
         } catch (error) {
             res.status(500).json({ error: 'Error fetching active orders' })
+        }
+    }
+
+    public async listProducts(req: Request, res: Response) {
+        try {
+            const products = await this.OrderUseCase.listProducts()
+            res.status(200).json(products)
+        } catch (error) {
+            res.status(500).json({ error: 'Error fetching products' })
         }
     }
 }
