@@ -3,6 +3,7 @@ import { OrderRepository } from '../domain/interface/orderRepository'
 import { ProductRepository } from '../domain/interface/productRepository'
 import { Product } from '../domain/entities/product'
 import { ORDER_STATUS } from '../constants/order'
+import { v4 } from 'uuid'
 
 export class OrderUseCase {
     constructor(
@@ -42,9 +43,6 @@ export class OrderUseCase {
             const existingProduct = await this.productRepository.findById(
                 item.idProduct
             )
-            console.log('item 3')
-
-            // list all products
 
             if (!existingProduct) {
                 console.log('Product not found')
@@ -71,13 +69,17 @@ export class OrderUseCase {
             order.value += productDetail.calculateTotalValue()
         }
 
+        order.idOrder = v4()
         order.items = itemsDetails
         order.status = ORDER_STATUS.AWAITING_PAYMENT
 
-        console.log(order)
-
-        const result = await this.orderRepository.createOrder(order)
-        return result
+        try {
+            const result = await this.orderRepository.createOrder(order)
+            return result
+        } catch (error) {
+            console.error('Error creating order:', error)
+            throw new Error('Failed to create order')
+        }
     }
 
     async updateOrder(id: string, order: Order) {

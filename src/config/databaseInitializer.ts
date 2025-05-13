@@ -3,16 +3,22 @@ import { getConnection } from './mysqlConfig'
 export async function initializeDatabase(): Promise<void> {
     const connection = await getConnection()
 
+    await connection.execute(`DROP TABLE IF EXISTS payments;`)
+    await connection.execute(`DROP TABLE IF EXISTS orders;`)
+    await connection.execute(`DROP TABLE IF EXISTS clients;`)
+    await connection.execute(`DROP TABLE IF EXISTS products;`)
+
     // Criação da tabela orders
     await connection.execute(`
         CREATE TABLE IF NOT EXISTS orders (
             id INT AUTO_INCREMENT PRIMARY KEY,
+            idOrder VARCHAR(36) NOT NULL UNIQUE,
             idClient VARCHAR(255) NOT NULL,
             cpf VARCHAR(11) NOT NULL,
             name VARCHAR(255) NOT NULL,
             email VARCHAR(255) NOT NULL,
             status VARCHAR(50) NOT NULL,
-            items JSON NOT NULL,
+            items JSON NOT NULL, 
             value DECIMAL(10, 2) NOT NULL,
             paymentLink VARCHAR(255),
             paymentId VARCHAR(255)
@@ -44,11 +50,11 @@ export async function initializeDatabase(): Promise<void> {
     await connection.execute(`
         CREATE TABLE IF NOT EXISTS payments (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            idOrder INT NOT NULL,
+            idOrder VARCHAR(36) NOT NULL,
             idClient INT NOT NULL,
             value DECIMAL(10, 2) NOT NULL,
             status VARCHAR(50) NOT NULL,
-            FOREIGN KEY (idOrder) REFERENCES orders(id),
+            FOREIGN KEY (idOrder) REFERENCES orders(idOrder),
             FOREIGN KEY (idClient) REFERENCES clients(id)
         );
     `)

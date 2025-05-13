@@ -5,15 +5,19 @@ import {
 } from '../../constants/order'
 import { Order } from '../../domain/entities/order'
 import { OrderRepository } from '../../domain/interface/orderRepository'
+import { v4 as uuidv4 } from 'uuid'
 
 export class MySQLOrderRepository implements OrderRepository {
     async createOrder(order: Order): Promise<string> {
+        const idOrder = order.idOrder || uuidv4()
+
         const connection = await getConnection()
-        const [result]: any = await connection.execute(
-            `INSERT INTO orders (idClient, cpf, name, email, status, items, value) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        await connection.execute(
+            `INSERT INTO orders (idOrder, idClient, cpf, name, email, status, items, value) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             [
-                order.idClient || null, // Torna idClient opcional
-                order.cpf ? order.cpf.replace(/\D/g, '') : null, // Remove pontos e torna CPF opcional
+                idOrder,
+                order.idClient || null,
+                order.cpf ? order.cpf.replace(/\D/g, '') : null,
                 order.name,
                 order.email,
                 order.status,
@@ -21,7 +25,7 @@ export class MySQLOrderRepository implements OrderRepository {
                 order.value,
             ]
         )
-        return result.insertId.toString()
+        return idOrder
     }
 
     async getOrder(orderId: string): Promise<Order | null> {
@@ -33,7 +37,7 @@ export class MySQLOrderRepository implements OrderRepository {
         if (rows.length > 0) {
             const order = rows[0]
             return new Order({
-                idOrder: order.id,
+                idOrder: order.idOrder,
                 idClient: order.idClient,
                 cpf: order.cpf,
                 name: order.name,
@@ -55,7 +59,7 @@ export class MySQLOrderRepository implements OrderRepository {
         try {
             const connection = await getConnection()
             await connection.execute(
-                `UPDATE orders SET idClient = ?, cpf = ?, name = ?, email = ?, status = ?, items = ?, value = ? WHERE id = ?`,
+                `UPDATE orders SET idClient = ?, cpf = ?, name = ?, email = ?, status = ?, items = ?, value = ? WHERE idOrder = ?`,
                 [
                     updatedOrderData.idClient || null, // Substitui undefined por null
                     updatedOrderData.cpf
@@ -79,7 +83,9 @@ export class MySQLOrderRepository implements OrderRepository {
 
     async deleteOrder(orderId: string): Promise<void> {
         const connection = await getConnection()
-        await connection.execute(`DELETE FROM orders WHERE id = ?`, [orderId])
+        await connection.execute(`DELETE FROM orders WHERE idOrder = ?`, [
+            orderId,
+        ])
     }
 
     async updateOrderStatus(orderId: string, status: string): Promise<void> {
@@ -105,7 +111,7 @@ export class MySQLOrderRepository implements OrderRepository {
         try {
             itens = rows.map((order: any) => {
                 return new Order({
-                    idOrder: order.id,
+                    idOrder: order.idOrder,
                     idClient: order.idClient,
                     cpf: order.cpf,
                     name: order.name,
@@ -136,7 +142,7 @@ export class MySQLOrderRepository implements OrderRepository {
         )
         return rows.map((order: any) => {
             return new Order({
-                idOrder: order.id,
+                idOrder: order.idOrder,
                 idClient: order.idClient,
                 cpf: order.cpf,
                 name: order.name,
