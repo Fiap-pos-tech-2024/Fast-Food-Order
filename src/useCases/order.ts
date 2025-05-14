@@ -70,6 +70,10 @@ export class OrderUseCase {
         }
 
         order.idOrder = v4()
+        // idOrder remove -
+        order.idOrder = order.idOrder.replace(/-/g, '')
+        order.idClient = order.idClient ?? null
+        order.idClient = order.idClient?.replace(/-/g, '') ?? null
         order.items = itemsDetails
         order.status = ORDER_STATUS.AWAITING_PAYMENT
 
@@ -84,8 +88,13 @@ export class OrderUseCase {
 
     async updateOrder(id: string, order: Order) {
         const existingOrder = await this.getOrder(id)
+
         if (!existingOrder) {
             throw new Error('Order does not exist')
+        }
+
+        if (order.idClient) {
+            order.idClient = order.idClient.replace(/-/g, '')
         }
         return this.orderRepository.updateOrder(id, order)
     }

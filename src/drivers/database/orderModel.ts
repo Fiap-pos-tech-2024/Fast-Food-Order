@@ -10,7 +10,6 @@ import { v4 as uuidv4 } from 'uuid'
 export class MySQLOrderRepository implements OrderRepository {
     async createOrder(order: Order): Promise<string> {
         const idOrder = order.idOrder || uuidv4()
-
         const connection = await getConnection()
         await connection.execute(
             `INSERT INTO orders (idOrder, idClient, cpf, name, email, status, items, value) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -31,7 +30,7 @@ export class MySQLOrderRepository implements OrderRepository {
     async getOrder(orderId: string): Promise<Order | null> {
         const connection = await getConnection()
         const [rows]: any = await connection.execute(
-            `SELECT * FROM orders WHERE id = ?`,
+            `SELECT * FROM orders WHERE idOrder = ?`,
             [orderId]
         )
         if (rows.length > 0) {
