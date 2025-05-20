@@ -63,14 +63,14 @@ describe('OrderController', () => {
     describe('createOrder', () => {
         it('should create a new order', async () => {
             req.body = Order.createMock()
-            mockOrderUseCase.createOrder.mockResolvedValue('12345')
+            mockOrderUseCase.createOrder.mockResolvedValue('mocked-uuid-1')
 
             await orderController.createOrder(req as Request, res as Response)
 
             expect(mockOrderUseCase.createOrder).toHaveBeenCalledWith(req.body)
             expect(res.status).toHaveBeenCalledWith(201)
             expect(res.json).toHaveBeenCalledWith({
-                id: '12345',
+                id: 'mocked-uuid-1',
                 message: 'Order created successfully',
             })
         })
@@ -105,24 +105,24 @@ describe('OrderController', () => {
 
     describe('updateOrder', () => {
         it('should update a order', async () => {
-            req.params = { id: '1' }
+            req.params = { id: 'mocked-uuid-1' }
             req.body = Order.createMock()
             mockOrderUseCase.updateOrder.mockResolvedValue()
 
             await orderController.updateOrder(req as Request, res as Response)
 
             expect(mockOrderUseCase.updateOrder).toHaveBeenCalledWith(
-                '1',
+                'mocked-uuid-1',
                 req.body
             )
             expect(res.status).toHaveBeenCalledWith(200)
             expect(res.send).toHaveBeenCalledWith(
-                'Order 1 updated successfully'
+                'Order mocked-uuid-1 updated successfully'
             )
         })
 
         it('should return 500 on error', async () => {
-            req.params = { id: '1' }
+            req.params = { id: 'mocked-uuid-1' }
             req.body = Order.createMock()
             mockOrderUseCase.updateOrder.mockRejectedValue(
                 new Error('An unexpected error occurred')
@@ -139,20 +139,22 @@ describe('OrderController', () => {
 
     describe('deleteOrder', () => {
         it('should delete a order', async () => {
-            req.params = { id: '1' }
+            req.params = { id: 'mocked-uuid-1' }
             mockOrderUseCase.deleteOrder.mockResolvedValue()
 
             await orderController.deleteOrder(req as Request, res as Response)
 
-            expect(mockOrderUseCase.deleteOrder).toHaveBeenCalledWith('1')
+            expect(mockOrderUseCase.deleteOrder).toHaveBeenCalledWith(
+                'mocked-uuid-1'
+            )
             expect(res.status).toHaveBeenCalledWith(200)
             expect(res.send).toHaveBeenCalledWith(
-                'Order 1 deleted successfully'
+                'Order mocked-uuid-1 deleted successfully'
             )
         })
 
         it('should return 500 on error', async () => {
-            req.params = { id: '1' }
+            req.params = { id: 'mocked-uuid-1' }
             mockOrderUseCase.deleteOrder.mockRejectedValue(
                 new Error('An unexpected error occurred')
             )
@@ -168,19 +170,21 @@ describe('OrderController', () => {
 
     describe('getOrder', () => {
         it('should return a order by id', async () => {
-            req.params = { id: '1' }
+            req.params = { id: 'mocked-uuid-1' }
             const order = Order.createMock()
             mockOrderUseCase.getOrder.mockResolvedValue(order)
 
             await orderController.getOrder(req as Request, res as Response)
 
-            expect(mockOrderUseCase.getOrder).toHaveBeenCalledWith('1')
+            expect(mockOrderUseCase.getOrder).toHaveBeenCalledWith(
+                'mocked-uuid-1'
+            )
             expect(res.status).toHaveBeenCalledWith(200)
             expect(res.json).toHaveBeenCalledWith(order)
         })
 
         it('should return 404 if order not found', async () => {
-            req.params = { id: '1' }
+            req.params = { id: 'mocked-uuid-1' }
             mockOrderUseCase.getOrder.mockResolvedValue(null)
 
             await orderController.getOrder(req as Request, res as Response)
@@ -190,7 +194,7 @@ describe('OrderController', () => {
         })
 
         it('should return 500 on error', async () => {
-            req.params = { id: '1' }
+            req.params = { id: 'mocked-uuid-1' }
             mockOrderUseCase.getOrder.mockRejectedValue(
                 new Error('An unexpected error occurred')
             )
@@ -206,7 +210,7 @@ describe('OrderController', () => {
 
     describe('updateOrderStatus', () => {
         it('should update a order status with success', async () => {
-            req.params = { id: '1' }
+            req.params = { id: 'mocked-uuid-1' }
             req.body = { status: ORDER_STATUS.RECEIVED }
             mockOrderUseCase.updateOrderStatus.mockResolvedValue(undefined)
 
@@ -216,17 +220,17 @@ describe('OrderController', () => {
             )
 
             expect(mockOrderUseCase.updateOrderStatus).toHaveBeenCalledWith(
-                '1',
+                'mocked-uuid-1',
                 'RECEIVED'
             )
             expect(res.status).toHaveBeenCalledWith(200)
             expect(res.send).toHaveBeenCalledWith(
-                `Order status 1 updated successfully`
+                `Order status mocked-uuid-1 updated successfully`
             )
         })
 
         it('should return 400 for invalid status', async () => {
-            req.params = { id: '1' }
+            req.params = { id: 'mocked-uuid-1' }
             req.body = { status: 'INVALID' }
             mockOrderUseCase.updateOrderStatus.mockResolvedValue(undefined)
 
@@ -242,7 +246,7 @@ describe('OrderController', () => {
         })
 
         it('should return 500 on error', async () => {
-            req.params = { id: '1' }
+            req.params = { id: 'mocked-uuid-1' }
             req.body = { status: ORDER_STATUS.RECEIVED }
             mockOrderUseCase.updateOrder.mockRejectedValue(
                 new Error('An unexpected error occurred')

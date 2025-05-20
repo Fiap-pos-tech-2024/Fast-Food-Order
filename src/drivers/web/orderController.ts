@@ -467,6 +467,9 @@ export class OrderController {
         const orderId = req.params.id
         const { status } = req.body
 
+        console.log('Status:', status)
+        console.log('Order ID:', orderId)
+
         if (!ORDER_STATUS_LIST.includes(status)) {
             res.status(400).json({ error: 'Invalid status provided' })
             return

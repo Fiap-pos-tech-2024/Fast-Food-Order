@@ -89,10 +89,10 @@ export class MySQLOrderRepository implements OrderRepository {
 
     async updateOrderStatus(orderId: string, status: string): Promise<void> {
         const connection = await getConnection()
-        await connection.execute(`UPDATE orders SET status = ? WHERE id = ?`, [
-            status,
-            orderId,
-        ])
+        await connection.execute(
+            `UPDATE orders SET status = ? WHERE idOrder = ?`,
+            [status, orderId]
+        )
     }
 
     async updatePayment(orderId: string, paymentId: string): Promise<void> {

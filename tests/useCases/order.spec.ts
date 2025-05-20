@@ -38,7 +38,7 @@ describe('orderUseCase', () => {
         it('should return a list of orders', async () => {
             const ordersData: Order[] = [
                 {
-                    idOrder: '123',
+                    idOrder: 'mocked-uuid-1',
                     paymentId: null,
                     paymentLink: null,
                     cpf: '000.000.000-00',
@@ -84,9 +84,9 @@ describe('orderUseCase', () => {
 
     describe('updateOrder', () => {
         it('should update order data if order exists', async () => {
-            const orderId = '1'
+            const orderId = 'mocked-uuid-1'
             const updadatedOrderData: Order = {
-                idOrder: '1',
+                idOrder: 'mocked-uuid-1',
                 paymentId: null,
                 paymentLink: null,
                 idClient: null,
@@ -109,9 +109,9 @@ describe('orderUseCase', () => {
         })
 
         it('should throw an error if order does not exist', async () => {
-            const orderId = '1'
+            const orderId = 'mocked-uuid-1'
             const updadatedOrderData: Order = {
-                idOrder: '1',
+                idOrder: 'mocked-uuid-1',
                 paymentId: null,
                 paymentLink: null,
                 idClient: null,
@@ -133,9 +133,9 @@ describe('orderUseCase', () => {
 
     describe('deleteOrder', () => {
         it('should delete a order by id if the order exists', async () => {
-            const orderId = '1'
+            const orderId = 'mocked-uuid-1'
             const orderData: Order = {
-                idOrder: '1',
+                idOrder: 'mocked-uuid-1',
                 paymentId: null,
                 paymentLink: null,
                 idClient: null,
@@ -155,7 +155,7 @@ describe('orderUseCase', () => {
         })
 
         it('should throw an error if order does not exist', async () => {
-            const orderId = '1'
+            const orderId = 'mocked-uuid-1'
             OrderRepository.getOrder.mockResolvedValue(null)
 
             await expect(useCase.deleteOrder(orderId)).rejects.toThrow(
@@ -167,9 +167,9 @@ describe('orderUseCase', () => {
 
     describe('getOrder', () => {
         it('should return a order by id', async () => {
-            const orderId = '1'
+            const orderId = 'mocked-uuid-1'
             const orderData: Order = {
-                idOrder: '1',
+                idOrder: 'mocked-uuid-1',
                 paymentId: null,
                 paymentLink: null,
                 idClient: null,
@@ -188,7 +188,7 @@ describe('orderUseCase', () => {
         })
 
         it('should return null if order does not exist', async () => {
-            const orderId = '1'
+            const orderId = 'mocked-uuid-1'
             OrderRepository.getOrder.mockResolvedValue(null)
 
             const result = await useCase.getOrder(orderId)
@@ -200,7 +200,7 @@ describe('orderUseCase', () => {
 
     describe('updateOrderStatus', () => {
         it('should send correctly params', async () => {
-            const orderId = '1'
+            const orderId = 'mocked-uuid-1'
             const status = ORDER_STATUS.IN_PREPARATION
             OrderRepository.updateOrderStatus.mockResolvedValue()
 
@@ -216,7 +216,7 @@ describe('orderUseCase', () => {
         it('should return only active and paid orders, sorted by creation date', async () => {
             const ordersData: Order[] = [
                 {
-                    idOrder: '1',
+                    idOrder: 'mocked-uuid-1',
                     idPayment: 'pay_123',
                     idClient: '1',
                     cpf: '000.000.000-00',
@@ -255,7 +255,7 @@ describe('orderUseCase', () => {
                     paymentId: 'pay_123',
                 } as Order,
                 {
-                    idOrder: '2',
+                    idOrder: 'mocked-uuid-2',
                     idPayment: 'pay_456',
                     idClient: '2',
                     cpf: '111.111.111-11',
@@ -287,8 +287,8 @@ describe('orderUseCase', () => {
 
             const result = await useCase.getActiveOrders()
 
-            expect(result[0].idOrder).toBe('1')
-            expect(result[1].idOrder).toBe('2')
+            expect(result[0].idOrder).toBe('mocked-uuid-1')
+            expect(result[1].idOrder).toBe('mocked-uuid-2')
             expect(OrderRepository.getActiveOrders).toHaveBeenCalledTimes(1)
         })
     })

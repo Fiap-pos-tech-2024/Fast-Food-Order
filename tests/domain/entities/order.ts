@@ -3,7 +3,7 @@ import { Product } from '../../../src/domain/entities/product'
 
 export class Order {
     constructor(
-        public idOrder: string | null,
+        public idOrder: string, // Agora obrigatório
         public idClient: string | null,
         public cpf: string | null,
         public name: string | null,
@@ -16,7 +16,7 @@ export class Order {
     ) {}
 
     static createMock(
-        idOrder = '1',
+        idOrder = 'mocked-uuid',
         idClient = '1',
         cpf = '000.000.000-00',
         name = 'John Doe',
