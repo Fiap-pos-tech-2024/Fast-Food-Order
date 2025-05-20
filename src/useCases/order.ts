@@ -44,8 +44,11 @@ export class OrderUseCase {
                 item.idProduct
             )
 
+            console.log(existingProduct)
+
             if (!existingProduct) {
                 console.log('Product not found')
+
                 // throw new Error(`Product with id ${item.idProduct} not found`)
                 // continue
             }

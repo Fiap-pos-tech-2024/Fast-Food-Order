@@ -7,7 +7,7 @@ services:
             - '3001:3001'
         environment:
             # Aqui, certifique-se de que esta variável usa o nome do container Mongo do outro projeto
-            MONGODB_URI: mongodb://shared-postgres:27017/shared_db
+            MONGODB_URI: mongodb://mongo:27017/shared_db
             MYSQL_HOST: mysql
             MYSQL_USER: root
             MYSQL_PASSWORD: food2025
@@ -30,6 +30,7 @@ services:
             - mongo_data:/data/db
         networks:
             - fast-food-network
+            - shared-net
 
     mysql:
         image: mysql:latest
